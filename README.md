@@ -1,6 +1,6 @@
 # BOM Generator Tool
 
-### OBJECTIE:
+### OBJECTIVE:
 + To generate a formatted and validated BOM for OrCAD or Altium files.
 + To be able to recreate the BOM generator of IMI.
 
@@ -10,6 +10,8 @@
 + Save 1 column of information into separate worksheet.
     i.e.
     BOM.xlsx > prodBOM.xlsx
++ Compare a contents in a row using compare_list function.
++ Create a error prompting window to emphasize the results of compare_list.
 
 
 ## References:
