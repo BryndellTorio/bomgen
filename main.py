@@ -16,16 +16,14 @@ ws = wb.active
 workbook_max_row = ws.max_row
 workbook_max_column = ws.max_column
 
-ws_cell_value = ws.cell(row=15,column=3).value
-
 check_results = []
 
 for i in range(workbook_max_row-setup.BOM_INDEX + 1):
     reference_List = ws.cell(row=setup.BOM_INDEX+i,column=3).value
     quantity_List = ws.cell(row=setup.BOM_INDEX+i,column=2).value
-    status = checker.compare_quantity_to_reference(reference_List,quantity_List)
+    comp_QR_result = checker.compare_quantity_to_reference(reference_List,quantity_List)
 
-    if (status == True):
-        check_results.append(f'C{setup.BOM_INDEX+i}')
+    if (comp_QR_result != False):
+        check_results.append(str(comp_QR_result))
 
 print(check_results)
