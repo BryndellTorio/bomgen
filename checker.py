@@ -1,19 +1,19 @@
-from openpyxl import load_workbook, Workbook
-
-path_to_data_1 = "C:\\Users\\bryndell.torio\\OneDrive - Integrated Micro-Electronics Inc\\Design\\Training\\bomgen\\Data\\bills_of_materials.xlsx"
-path_to_data_2 = "C:\\Users\\bryndell.torio\\OneDrive - Integrated Micro-Electronics Inc\\Design\\Training\\bomgen\\Data\\test_data.xlsx"
-
-wb = load_workbook(filename = path_to_data_1)
-ws = wb.active
-
-workbook_max_row = ws.max_row
-workbook_max_column = ws.max_column
-
-# function definition that passes 2 lists then returns a list of validated similar objects.
-def compare_list(original_workbook,t_workbook):
+def compare_list(List1,List2):
     comparison_results = []
-    for i in range(len(original_workbook)):
-        for j in range(len(t_workbook)):
-            if (original_workbook[i] == t_workbook[j]):
-                comparison_results.append(original_workbook[i])
+    for i in range(len(List1)):
+        for j in range(len(List2)):
+            if (List1[i] == List2[j]):
+                comparison_results.append(List1[i])
     return comparison_results
+
+# sample_list = ['C1','C2','C3']
+# sample_quantity = 2
+
+def compare_quantity_to_reference(Reference_List,Quantity_List):
+    compare_QTR_results = []
+    t_Ref_List = Reference_List.split(',')
+
+    if (len(t_Ref_List) != Quantity_List):
+        return True
+    else:
+        return False

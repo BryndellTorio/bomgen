@@ -13,6 +13,9 @@
 + Compare a contents in a row using compare_list function.
 + Create a error prompting window to emphasize the results of compare_list.
 
++ 18:29 2023-01-12 TODO
+    - Create a list of reference then pass it to compare_quantity_to_reference() function.
+
 
 ## References:
 + Reference: https://realpython.com/openpyxl-excel-spreadsheets-python/
