@@ -1,6 +1,7 @@
 # Locally defined modules
 import checker
 import setup
+import tkinter as tk
 
 # Python modules
 from openpyxl import load_workbook, Workbook
@@ -26,4 +27,34 @@ for i in range(workbook_max_row-setup.BOM_INDEX + 1):
     if (comp_QR_result != False):
         check_results.append(str(comp_QR_result))
 
-print(check_results)
+class myGUI():
+
+    def __init__(self) -> None:
+
+        self.root = tk.Tk()
+
+        self.root.geometry("500x500")
+        self.root.title("Integrater Micro-Electronics Inc. - Design and Development")
+
+
+        self.label = tk.Label(self.root, text="BOM Generator", font=('Arial', 20))
+        self.label.pack(padx=22, pady=22)
+
+
+        self.button1 = tk.Button(self.root, text="Generate BOM", font=('Arial', 11), command=self.print_Check)
+        self.button1.pack(padx=10, pady=10)
+
+        self.button2 = tk.Button(self.root, text="Compare Netlist", font=('Arial', 11))
+        self.button2.pack(padx=10, pady=10)
+
+        self.textbox = tk.Text(self.root, height=3, font=('Arial', 22))
+        self.textbox.pack(padx=50,  expand=1)
+
+        self.root.mainloop()
+
+    def print_Check(self):
+        print(check_results)
+
+myGUI()
+
+
