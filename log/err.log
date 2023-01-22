@@ -1,0 +1,5 @@
+ERROR: Reference and Quantity item count mismatch. [2023-01-23 00:58:16.834759]=>	item:3		Reference count:27	Quantity count:24
+ERROR: Reference and Quantity item count mismatch. [2023-01-23 00:58:16.834759]=>	item:6		Reference count:3	Quantity count:2
+ERROR: Reference and Quantity item count mismatch. [2023-01-23 00:58:16.834759]=>	item:11		Reference count:5	Quantity count:4
+ERROR: Reference and Quantity item count mismatch. [2023-01-23 00:58:16.834759]=>	item:21		Reference count:16	Quantity count:15
+ERROR: Reference and Quantity item count mismatch. [2023-01-23 00:58:16.834759]=>	item:29		Reference count:42	Quantity count:40
