@@ -10,6 +10,8 @@ from openpyxl import load_workbook, Workbook
 import checker
 import setup
 
+HOME = os.path.expanduser("~")
+
 
 def validate_bom():
     global t_results
@@ -47,7 +49,8 @@ def validate_bom():
     # placeholder = str(error_results).split(',')
 
 def error_log():
-    fileName = 'errorlog.txt'
+    fileName= HOME + '.\\log\\errorlog.txt'
+    print(fileName)
     errorFile = open(fileName, 'w')
     errorFile.write(str(t_results))
     errorFile.close()
