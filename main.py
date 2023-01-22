@@ -11,13 +11,14 @@ import checker
 import setup
 
 HOME = os.path.expanduser("~")
+print(HOME)
 
 
 def validate_bom():
     global t_results
     global ws
     window.path_to_data = filedialog.askopenfilename(
-            initialdir="C:\\Users\\bryndell.torio\\OneDrive - Integrated Micro-Electronics Inc\\Design\\Training\\bomgen\\Data", # Change this to $HOME location.
+            initialdir=HOME+"\\bomgen\\Data\\bills_of_materials-tmp.xlsx", # Change this to $HOME location.
             title="Select a file",
             filetypes=(("Excel files", "*.xlsx"),
                        ("BOM files", "*.BOM"),
@@ -49,7 +50,7 @@ def validate_bom():
     # placeholder = str(error_results).split(',')
 
 def error_log():
-    fileName= HOME + '.\\log\\errorlog.txt'
+    fileName= HOME + "bomgen\\log\\errorlog.txt"
     print(fileName)
     errorFile = open(fileName, 'w')
     errorFile.write(str(t_results))
