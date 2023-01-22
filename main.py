@@ -49,31 +49,26 @@ def validate_bom():
         set_statusbar_message("ERROR found check log file.")
         print_results()
 
+    # Might be useful in extracting the schematic filename.
     # error_results=[]
     # error_results.append(str(ws['A2'].value).split('          '))
     # placeholder = str(error_results).split(',')
 
 def print_results():
     arr = []
-
     for i in range(len(t_results)):
         arr.append(str(t_results[i]).split(":"))
-        # print(arr)
-        # print(str(t_results[i]).split(":"))
     for j in range(len(arr)):
-        for k in range(3): 
-            item_number = arr[j][0]
-            ref_count = arr[j][1]
-            qty_count = arr[j][2]
-        message_log = (f"""[ERROR:\t{DATE}]\t\t\titem:{item_number}\t\tReference count:{ref_count}\tQuantity count:{qty_count}\n""")
+        item_number = arr[j][0]
+        ref_count = arr[j][1]
+        qty_count = arr[j][2]
+        message_log = (f"""ERROR: Reference and Quantity item count mismatch. [{DATE}]=>\titem:{item_number}\t\tReference count:{ref_count}\tQuantity count:{qty_count}\n""")
         log(1, message_log)
     show_err_message()
 
-        # print("item= ", item_number)
-        # print("ref= ", ref_count)
-        # print("qty= ", qty_count)
-        # for j in range(arr)):
-        #     print(str(arr).split("="))
+def open_log_file():
+        os.startfile(LOG_FILE_LOCATION)
+
 def show_err_message():
     messagebox.showerror(title='Error:',message='Found mismatch in Quantity and Reference.')
     if messagebox.askyesnocancel(title='log',message='Do you like to open log file?'):
@@ -127,22 +122,16 @@ button1 = tk.Button(window,
 button1.pack(padx=10, pady=10)
 
 button2 = tk.Button(window,
-                    text="Path",
+                    text="Open Log",
                     font=('Arial', 11),
-                    command=print_path)
+                    command=open_log_file)
 button2.pack(padx=10, pady=10)
 
 button3 = tk.Button(window,
-                    text="Check Results",
-                    font=('Arial', 11),
-                    command=print_results)
-button3.pack(padx=10, pady=10)
-
-button4 = tk.Button(window,
                     text="Clear Log",
                     font=('Arial', 11),
                     command=clear_log)
-button4.pack(padx=10, pady=10)
+button3.pack(padx=10, pady=10)
 
 status_message = ""
 status = Label(window,
