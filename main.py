@@ -10,15 +10,20 @@ from openpyxl import load_workbook, Workbook
 import checker
 import setup
 
-HOME = os.path.expanduser("~")
+HOME = os.path.expanduser("~") + "\\Documents"
+INITIAL_DIR = HOME + "bomgen\\Data\\bills_of_materials-tmp.xlsx"
+ERR_FILE_LOCATION = HOME + "bomgen\\logs\\err.log"
 print(HOME)
+print(INITIAL_DIR)
+print(ERR_FILE_LOCATION)
+
 
 
 def validate_bom():
     global t_results
     global ws
     window.path_to_data = filedialog.askopenfilename(
-            initialdir=HOME+"\\bomgen\\Data\\bills_of_materials-tmp.xlsx", # Change this to $HOME location.
+            initialdir=INITIAL_DIR, # Change this to $HOME location.
             title="Select a file",
             filetypes=(("Excel files", "*.xlsx"),
                        ("BOM files", "*.BOM"),
@@ -50,8 +55,7 @@ def validate_bom():
     # placeholder = str(error_results).split(',')
 
 def error_log():
-    fileName= HOME + "bomgen\\log\\errorlog.txt"
-    print(fileName)
+    fileName= HOME + ".\\log\\errlog.txt" # Replace filename as err.log
     errorFile = open(fileName, 'w')
     errorFile.write(str(t_results))
     errorFile.close()
