@@ -66,8 +66,6 @@ def print_results():
         log(1, message_log)
     show_err_message()
 
-def open_log_file():
-        os.startfile(LOG_FILE_LOCATION)
 
 def show_err_message():
     messagebox.showerror(title='Error:',message='Found mismatch in Quantity and Reference.')
@@ -86,6 +84,11 @@ def log(select,message):
         logFile.close()
     elif select == 2:
         print("DO me!")
+
+def open_log_file():
+    set_statusbar_message("Opening log file...")
+    os.startfile(LOG_FILE_LOCATION)
+    set_statusbar_message("Done.")
 
 def clear_log():
     set_statusbar_message("Clearing log file")
