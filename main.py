@@ -1,7 +1,8 @@
 # Core modules
 import os
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import BOTTOM, LEFT, RIGHT, SUNKEN, Label, filedialog, messagebox
+from datetime import datetime
 
 # 3rd party modules
 from openpyxl import load_workbook, Workbook
@@ -10,23 +11,23 @@ from openpyxl import load_workbook, Workbook
 import checker
 import setup
 
+
+DATE = datetime.now()
+
+# Path definition
 HOME = os.path.expanduser("~") + "\\Documents"
-INITIAL_DIR = HOME + "bomgen\\Data\\bills_of_materials-tmp.xlsx"
-ERR_FILE_LOCATION = HOME + "bomgen\\logs\\err.log"
-print(HOME)
-print(INITIAL_DIR)
-print(ERR_FILE_LOCATION)
-
-
+INITIAL_DIR = HOME + "\\bomgen\\Data"
+LOG_FILE_LOCATION = HOME + "\\bomgen\\log\\err.log"
+LOGO_LOCATION = HOME + "\\bomgen\\Images\\IMI-Logo.png"
 
 def validate_bom():
     global t_results
     global ws
+    set_statusbar_message("Generating BOM...")
     window.path_to_data = filedialog.askopenfilename(
             initialdir=INITIAL_DIR, # Change this to $HOME location.
             title="Select a file",
-            filetypes=(("Excel files", "*.xlsx"),
-                       ("BOM files", "*.BOM"),
+            filetypes=(("Excel files", "*.xlsx"), # ("BOM files", "*.BOM"), Check if .BOM can be processed.
                        ("all files", "*.*")))
 
     # Loading the selected bom file into the design.
@@ -38,32 +39,65 @@ def validate_bom():
 
     t_results=[]
     for i in range(workbook_max_row-setup.BOM_INDEX+1):
-        reference_List = ws.cell(row=setup.BOM_INDEX+i,column=3).value
-        quantity_List = ws.cell(row=setup.BOM_INDEX+i,column=2).value
-        comp_QR_result = checker.compare_quantity_to_reference(reference_List,quantity_List)
+        reference_list = ws.cell(row=setup.BOM_INDEX+i,column=3).value
+        quantity_list = ws.cell(row=setup.BOM_INDEX+i,column=2).value
+        comp_QR_result = checker.compare_quantity_to_reference(reference_list,quantity_list,i)
         if comp_QR_result:
             t_results.append(comp_QR_result)
 
-    for x in range(len(t_results)):
-        print(str(t_results[x]).split(':'))
-
     if t_results:
-        error_log()
+        set_statusbar_message("ERROR found check log file.")
+        print_results()
 
     # error_results=[]
     # error_results.append(str(ws['A2'].value).split('          '))
     # placeholder = str(error_results).split(',')
 
-def error_log():
-    fileName= HOME + ".\\log\\errlog.txt" # Replace filename as err.log
-    errorFile = open(fileName, 'w')
-    errorFile.write(str(t_results))
-    errorFile.close()
+def print_results():
+    arr = []
 
+    for i in range(len(t_results)):
+        arr.append(str(t_results[i]).split(":"))
+        # print(arr)
+        # print(str(t_results[i]).split(":"))
+    for j in range(len(arr)):
+        for k in range(3): 
+            item_number = arr[j][0]
+            ref_count = arr[j][1]
+            qty_count = arr[j][2]
+        message_log = (f"""[ERROR:\t{DATE}]\t\t\titem:{item_number}\t\tReference count:{ref_count}\tQuantity count:{qty_count}\n""")
+        log(1, message_log)
+    show_err_message()
+
+        # print("item= ", item_number)
+        # print("ref= ", ref_count)
+        # print("qty= ", qty_count)
+        # for j in range(arr)):
+        #     print(str(arr).split("="))
+def show_err_message():
     messagebox.showerror(title='Error:',message='Found mismatch in Quantity and Reference.')
+    if messagebox.askyesnocancel(title='log',message='Do you like to open log file?'):
+        os.startfile(LOG_FILE_LOCATION)
 
-    if messagebox.askyesnocancel(title='Debug log',message='Do you like to open debug log?'):
-        os.startfile(fileName)
+
+def set_statusbar_message(select_status):
+    status['text'] = select_status
+
+def log(select,message):
+    fileName=LOG_FILE_LOCATION
+    if select == 1:
+        logFile = open(fileName, 'a')
+        logFile.write(message)
+        logFile.close()
+    elif select == 2:
+        print("DO me!")
+
+def clear_log():
+    set_statusbar_message("Clearing log file")
+    fileName=LOG_FILE_LOCATION
+    logFile = open(fileName, 'w')
+    logFile.close()
+    set_statusbar_message("Done.")
 
 def temporary_function():
     tempo_results = str(t_results).split(',')
@@ -72,15 +106,13 @@ def temporary_function():
 def print_path():
     print(window.path_to_data)
 
-def print_results():
-    print(t_results)
 
 # Start of GUI loop.
 window = tk.Tk()
 
-window.geometry("500x500")
+window.geometry("350x350")
 window.title("Integrater Micro-Electronics Inc. - Design and Development")
-icon = tk.PhotoImage(file='.\\Images\\imi-logo.png')
+icon = tk.PhotoImage(file=LOGO_LOCATION)
 window.iconphoto(True,icon)
 
 label = tk.Label(window,
@@ -101,15 +133,25 @@ button2 = tk.Button(window,
 button2.pack(padx=10, pady=10)
 
 button3 = tk.Button(window,
-                    text="Check",
+                    text="Check Results",
                     font=('Arial', 11),
                     command=print_results)
 button3.pack(padx=10, pady=10)
 
-textbox = tk.Text(window,
-                  height=3,
-                  font=('Arial', 22))
-textbox.pack(padx=50,  expand=1)
+button4 = tk.Button(window,
+                    text="Clear Log",
+                    font=('Arial', 11),
+                    command=clear_log)
+button4.pack(padx=10, pady=10)
+
+status_message = ""
+status = Label(window,
+               text=status_message,
+               bd=1,
+               relief=SUNKEN,
+               anchor="w",
+               font=('Arial', 9))
+status.pack(side=BOTTOM, fill="x")
 
 window.mainloop()
 # End of GUI loop.

@@ -6,13 +6,14 @@ def compare_list(List1, List2):
                 comparison_results.append(List1[i])
     return comparison_results
 
-def compare_quantity_to_reference(Reference_List, Quantity_List):
+def compare_quantity_to_reference(Reference_List, quantity_list,item_number):
     QTR_Results=[]
     t_Ref_List = str(Reference_List).split(',')
     length_Ref_List = len(t_Ref_List)
 
-    if (length_Ref_List != Quantity_List):
-        QTR_Results.append(f'refCnt={length_Ref_List}:qtyCnt={Quantity_List}')
+    # Return error list, format: [Item:reference count:quantity count]
+    if (length_Ref_List != quantity_list):
+        QTR_Results = f'{item_number+1}:{length_Ref_List}:{quantity_list}'
         return QTR_Results
     else:
         return False
