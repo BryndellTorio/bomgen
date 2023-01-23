@@ -13,7 +13,7 @@ def compare_quantity_to_reference(Reference_List, quantity_list,item_number):
 
     # Return error list, format: [Item:reference count:quantity count]
     if (length_Ref_List != quantity_list):
-        QTR_Results = f'{item_number+1}:{length_Ref_List}:{quantity_list}'
+        QTR_Results = f"{item_number+1}:{length_Ref_List}:{quantity_list}"
         return QTR_Results
     else:
         return False

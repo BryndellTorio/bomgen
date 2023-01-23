@@ -2,7 +2,8 @@
 import os
 import tkinter as tk
 from tkinter import BOTTOM, LEFT, RIGHT, SUNKEN, Label, filedialog, messagebox
-from datetime import datetime
+from datetime import date
+import time
 
 # 3rd party modules
 from openpyxl import load_workbook, Workbook
@@ -11,9 +12,6 @@ from openpyxl import load_workbook, Workbook
 import checker
 import setup
 
-
-DATE = datetime.now()
-
 # Path definition
 HOME = os.path.expanduser("~") + "\\Documents"
 INITIAL_DIR = HOME + "\\bomgen\\Data"
@@ -21,8 +19,6 @@ LOG_FILE_LOCATION = HOME + "\\bomgen\\log\\err.log"
 LOGO_LOCATION = HOME + "\\bomgen\\Images\\IMI-Logo.png"
 
 def validate_bom():
-    global t_results
-    global ws
     set_statusbar_message("Generating BOM...")
     window.path_to_data = filedialog.askopenfilename(
             initialdir=INITIAL_DIR, # Change this to $HOME location.
@@ -46,44 +42,44 @@ def validate_bom():
             t_results.append(comp_QR_result)
 
     if t_results:
-        set_statusbar_message("ERROR found check log file.")
-        print_results()
+        log("WRITE_ERROR",list=t_results)
 
     # Might be useful in extracting the schematic filename.
     # error_results=[]
     # error_results.append(str(ws['A2'].value).split('          '))
     # placeholder = str(error_results).split(',')
 
-def print_results():
-    arr = []
-    for i in range(len(t_results)):
-        arr.append(str(t_results[i]).split(":"))
-    for j in range(len(arr)):
-        item_number = arr[j][0]
-        ref_count = arr[j][1]
-        qty_count = arr[j][2]
-        message_log = (f"""ERROR: Reference and Quantity item count mismatch. [{DATE}]=>\titem:{item_number}\t\tReference count:{ref_count}\tQuantity count:{qty_count}\n""")
-        log(1, message_log)
-    show_err_message()
-
-
 def show_err_message():
     messagebox.showerror(title='Error:',message='Found mismatch in Quantity and Reference.')
     if messagebox.askyesnocancel(title='log',message='Do you like to open log file?'):
         os.startfile(LOG_FILE_LOCATION)
 
-
 def set_statusbar_message(select_status):
     status['text'] = select_status
 
-def log(select,message):
+def log(select,message="",list=[]):
     fileName=LOG_FILE_LOCATION
-    if select == 1:
+    if select == "WRITE":
         logFile = open(fileName, 'a')
         logFile.write(message)
         logFile.close()
-    elif select == 2:
-        print("DO me!")
+    elif select == "WRITE_ERROR":
+        set_statusbar_message("ERROR found check log file.")
+        DATE = date.today()
+        log("WRITE",message=f"###\tSTART [{DATE}]\t###\n")
+        arr = []
+        for i in range(len(list)):
+            arr.append(str(list[i]).split(":"))
+
+        for j in range(len(arr)):
+            item_number = arr[j][0]
+            ref_count = arr[j][1]
+            qty_count = arr[j][2]
+            curr_time = time.strftime("%H:%M:%S", time.localtime())
+            message_log = f"ERROR: Reference and Quantity item count mismatch. [{curr_time}]=>\titem:{item_number}\t\tReference count:{ref_count}\tQuantity count:{qty_count}\n"
+            log("WRITE", message=message_log)
+        log("WRITE",message="###\tEND\t###\n")
+        show_err_message()
 
 def open_log_file():
     set_statusbar_message("Opening log file...")
@@ -97,14 +93,6 @@ def clear_log():
     logFile.close()
     set_statusbar_message("Done.")
 
-def temporary_function():
-    tempo_results = str(t_results).split(',')
-    print(tempo_results)
-
-def print_path():
-    print(window.path_to_data)
-
-
 # Start of GUI loop.
 window = tk.Tk()
 
@@ -116,7 +104,7 @@ window.iconphoto(True,icon)
 label = tk.Label(window,
                  text="BOM Generator",
                  font=('Arial', 20))
-label.pack(padx=22, pady=22)
+label.pack(padx=15, pady=15)
 
 button1 = tk.Button(window,
                     text="Generate BOM",
