@@ -1,23 +1,39 @@
 # Core modules
 import os
-import tkinter as tk
-from tkinter import BOTTOM, LEFT, RIGHT, SUNKEN, Label, filedialog, messagebox
-from datetime import date
 import time
+import tkinter as tk
+from tkinter import BOTTOM, SUNKEN, Label, filedialog, messagebox
+from datetime import date
 
 # 3rd party modules
-from openpyxl import load_workbook, Workbook
+from openpyxl import load_workbook
 
 # Locally defined modules
 import checker
-import setup
 
+# [DEFINITION]
 # Path definition
 HOME = os.path.expanduser("~") + "\\Documents"
 INITIAL_DIR = HOME + "\\bomgen\\Data"
 LOG_FILE_LOCATION = HOME + "\\bomgen\\log\\err.log"
 LOGO_LOCATION = HOME + "\\bomgen\\Images\\IMI-Logo.png"
+FORMAT_LOCATION = HOME + "\\bomgen\\Format\\Default_Format.xlsx"
 
+# BOM column number definitions
+QUANTITY_INDEX = 2
+REFERENCE_INDEX = 3
+EAZIX_INDEX = 4
+SAP_INDEX = 5
+MANUFACTURER1_INDEX = 7
+MPN1_INDEX = 8
+MANUFACTURER2_INDEX = 9
+MPN2_INDEX = 10
+NOTES_INDEX = 12
+
+# Index of BOM file.
+BOM_INDEX = 15
+
+# [IMPORTANT] Save the *.BOM files as Excel Workbook. Stict Open XML Spreadsheet format will cause errors.
 def validate_bom():
     set_statusbar_message("Generating BOM...")
     window.path_to_data = filedialog.askopenfilename(
@@ -27,27 +43,58 @@ def validate_bom():
                        ("all files", "*.*")))
 
     # Loading the selected bom file into the design.
-    wb = load_workbook(filename = window.path_to_data)
+    wb = load_workbook(filename=window.path_to_data, read_only=True)
     ws = wb.active
 
-    workbook_max_row = ws.max_row
-    workbook_max_column = ws.max_column
-
+    # Validating item count for Reference and Quantity column.
     t_results=[]
-    for i in range(workbook_max_row-setup.BOM_INDEX+1):
-        reference_list = ws.cell(row=setup.BOM_INDEX+i,column=3).value
-        quantity_list = ws.cell(row=setup.BOM_INDEX+i,column=2).value
-        comp_QR_result = checker.compare_quantity_to_reference(reference_list,quantity_list,i)
+
+    BOM_MAX_ROW = ws.max_row-BOM_INDEX+1
+
+    for i in range(BOM_MAX_ROW):
+        comp_QR_result = checker.compare_quantity_to_reference(ws.cell(row=BOM_INDEX+i,column=REFERENCE_INDEX).value,
+                                                               ws.cell(row=BOM_INDEX+i,column=QUANTITY_INDEX).value,
+                                                               i)
         if comp_QR_result:
             t_results.append(comp_QR_result)
 
     if t_results:
-        log("WRITE_ERROR",list=t_results)
+        log("WRITE_ITEM_COUNT_ERROR",list=t_results)
 
-    # Might be useful in extracting the schematic filename.
-    # error_results=[]
-    # error_results.append(str(ws['A2'].value).split('          '))
-    # placeholder = str(error_results).split(',')
+def test_function():
+    window.path_to_data = filedialog.askopenfilename(
+            initialdir=INITIAL_DIR, # Change this to $HOME location.
+            title="Select a file",
+            filetypes=(("Excel files", "*.xlsx"), # ("BOM files", "*.BOM"), Check if .BOM can be processed.
+                       ("all files", "*.*")))
+
+    # Loading the selected bom file into the design.
+    wb = load_workbook(filename=window.path_to_data, read_only=True)
+    ws = wb.active
+
+    BOM_MAX_ROW = ws.max_row-BOM_INDEX+1
+
+    # Validating MPN1
+    mpn1_list=[] 
+    place_holder=[]
+    for i in range(BOM_MAX_ROW):
+       mpn1_list.append(ws.cell(row=BOM_INDEX+i,column=MPN1_INDEX).value)
+    mpn1_list = checker.check_column(mpn1_list,length=BOM_MAX_ROW)
+
+    mpn1_results=[]
+    for i in range(len(mpn1_list)):
+        place_holder = mpn1_list[i].split(':')
+
+        # Checks if the item is already listed in mpn1_results list if no append to the list.
+        ELEMENT1 = place_holder[0]
+        ELEMENT2 = place_holder[1]
+        mark1 = checker.check_list_content(mpn1_results,ELEMENT1)
+        if mark1 == 0:
+            mpn1_results.append(ELEMENT1)
+        mark2 = checker.check_list_content(mpn1_results,ELEMENT2)
+        if mark2 == 0:
+            mpn1_results.append(ELEMENT2)
+    print(mpn1_results)
 
 def show_err_message():
     messagebox.showerror(title='Error:',message='Found mismatch in Quantity and Reference.')
@@ -63,20 +110,22 @@ def log(select,message="",list=[]):
         logFile = open(fileName, 'a')
         logFile.write(message)
         logFile.close()
-    elif select == "WRITE_ERROR":
+    elif select == "WRITE_ITEM_COUNT_ERROR":
         set_statusbar_message("ERROR found check log file.")
         DATE = date.today()
-        log("WRITE",message=f"###\tSTART [{DATE}]\t###\n")
+        curr_time = time.strftime("%H:%M:%S", time.localtime())
+        log("WRITE",message=f"###\tSTART\t###\t[{curr_time} {DATE}]\n")
+
+        # Split the received list using ':' then store it in an array.
         arr = []
         for i in range(len(list)):
             arr.append(str(list[i]).split(":"))
 
-        for j in range(len(arr)):
-            item_number = arr[j][0]
-            ref_count = arr[j][1]
-            qty_count = arr[j][2]
-            curr_time = time.strftime("%H:%M:%S", time.localtime())
-            message_log = f"ERROR: Reference and Quantity item count mismatch. [{curr_time}]=>\titem:{item_number}\t\tReference count:{ref_count}\tQuantity count:{qty_count}\n"
+        for index in range(len(arr)):
+            item_number = arr[index][0]
+            ref_count = arr[index][1]
+            qty_count = arr[index][2]
+            message_log = f"ERROR: Reference and Quantity item count mismatch.===> Row:{int(item_number)+BOM_INDEX-1}\t\tReference count:{ref_count}\tQuantity count:{qty_count}\n"
             log("WRITE", message=message_log)
         log("WRITE",message="###\tEND\t###\n")
         show_err_message()
@@ -123,6 +172,12 @@ button3 = tk.Button(window,
                     font=('Arial', 11),
                     command=clear_log)
 button3.pack(padx=10, pady=10)
+
+button4 = tk.Button(window,
+                    text="Test",
+                    font=('Arial', 11),
+                    command=test_function)
+button4.pack(padx=10, pady=10)
 
 status_message = ""
 status = Label(window,

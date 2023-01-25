@@ -1,14 +1,5 @@
-###	START [2023-01-23]	###
-ERROR: Reference and Quantity item count mismatch. [10:49:41]=>	item:3		Reference count:27	Quantity count:24
-ERROR: Reference and Quantity item count mismatch. [10:49:41]=>	item:6		Reference count:3	Quantity count:2
-ERROR: Reference and Quantity item count mismatch. [10:49:41]=>	item:11		Reference count:5	Quantity count:4
-ERROR: Reference and Quantity item count mismatch. [10:49:41]=>	item:21		Reference count:16	Quantity count:15
-ERROR: Reference and Quantity item count mismatch. [10:49:41]=>	item:29		Reference count:42	Quantity count:40
-###	END	###
-###	START [2023-01-23]	###
-ERROR: Reference and Quantity item count mismatch. [10:50:04]=>	item:3		Reference count:27	Quantity count:24
-ERROR: Reference and Quantity item count mismatch. [10:50:04]=>	item:6		Reference count:3	Quantity count:2
-ERROR: Reference and Quantity item count mismatch. [10:50:04]=>	item:11		Reference count:5	Quantity count:4
-ERROR: Reference and Quantity item count mismatch. [10:50:04]=>	item:21		Reference count:16	Quantity count:15
-ERROR: Reference and Quantity item count mismatch. [10:50:04]=>	item:29		Reference count:42	Quantity count:40
+###	START	###	[14:02:54 2023-01-24]
+ERROR: Reference and Quantity item count mismatch.===> Row:32		Reference count:12	Quantity count:10
+ERROR: Reference and Quantity item count mismatch.===> Row:33		Reference count:4	Quantity count:3
+ERROR: Reference and Quantity item count mismatch.===> Row:53		Reference count:23	Quantity count:20
 ###	END	###
