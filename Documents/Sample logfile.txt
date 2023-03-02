@@ -1,0 +1,19 @@
+['CL21A226KPCLRNC', '25', '31', '67']
+['None', '36', '59']
+['CRCW0402100KFKED', '42', '50', '68']
+
+
+
+[FORMAT]
+Add the items with no values in the error
+log file.
+[FORMAT]
+Cadence 1x i.e. ERROR 11 ERROR 12
+Altium 2x i.e. ERROR 21 ERROR 22
+Pads 3x i.e. ERROR 31 ERROR 32
+
+ERROR 1: Reference and Quantity item count mismatch.===> Row:32 Reference count:12 Quantity count:10
+ERROR 2: No Manufacturer Part Number.===> Row:<ROW NO>
+ERROR 3: Manufacturer Part Number Duplicate.===> MPN:<MPN> Row:<ROW NUMBER> Row:<ROW NUMBER>
+ERROR 4: Matching EAZIX Number.===> EAZIX#1:<ROW1 NO> EAZIX#2:<ROW2 NO> EAZIX#3:<ROW3 NO>
+ERROR 5: Matching SAP Number.===> SAP#1:<ROW1 NO> SAP#2:<ROW2 NO> SAP#3:<ROW3 NO>
