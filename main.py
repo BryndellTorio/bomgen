@@ -2,7 +2,7 @@
 import os
 import time
 import tkinter as tk
-from tkinter import BOTTOM, SUNKEN, Label, filedialog, messagebox
+from tkinter import BOTTOM, SUNKEN, Label, OptionMenu, StringVar, filedialog, messagebox
 from datetime import date
 
 # 3rd party modules
@@ -142,51 +142,72 @@ def clear_log():
     logFile.close()
     set_statusbar_message("Done.")
 
-# Start of GUI loop.
-window = tk.Tk()
 
-window.geometry("350x350")
-window.title("Integrater Micro-Electronics Inc. - Design and Development")
-icon = tk.PhotoImage(file=LOGO_LOCATION)
-window.iconphoto(True,icon)
+def main():
+    global window, status
+    # Start of GUI loop.
+    window = tk.Tk()
 
-label = tk.Label(window,
-                 text="BOM Generator",
-                 font=('Arial', 20))
-label.pack(padx=15, pady=15)
+    window.geometry("350x350")
+    window.title("Integrater Micro-Electronics Inc. - Design and Development")
+    icon = tk.PhotoImage(file=LOGO_LOCATION)
+    window.iconphoto(True,icon)
 
-button1 = tk.Button(window,
-                    text="Generate BOM",
-                    font=('Arial', 11),
-                    command=validate_bom)
-button1.pack(padx=10, pady=10)
+    label = tk.Label(window,
+                    text="BOM Generator",
+                    font=('Arial', 20))
+    label.pack(padx=15, pady=15)
 
-button2 = tk.Button(window,
-                    text="Open Log",
-                    font=('Arial', 11),
-                    command=open_log_file)
-button2.pack(padx=10, pady=10)
+    # Drop down code here.
+    options = [
+            "Orcad 17.2",
+            "Altium",
+            "Pads"
+            ]
+    CAD_software = StringVar(window)
 
-button3 = tk.Button(window,
-                    text="Clear Log",
-                    font=('Arial', 11),
-                    command=clear_log)
-button3.pack(padx=10, pady=10)
+    CAD_software.set("Select CAD software")
+    drop = OptionMenu(window, CAD_software, *options)
+    drop.pack(side=tk.RIGHT, padx=15)
 
-button4 = tk.Button(window,
+    button1 = tk.Button(window,
+                        text="Generate BOM",
+                        font=('Arial', 11),
+                        command=validate_bom)
+    button1.pack(padx=10, pady=10)
+
+    button2 = tk.Button(window, 
+                        text="Open Log",
+                        font=('Arial', 11),
+                        command=open_log_file)
+    button2.pack(padx=10, pady=10)
+
+    button3 = tk.Button(window, 
+                        text="Clear Log",
+                        font=('Arial', 11),
+                        command=clear_log)
+    button3.pack(padx=10, pady=10)
+    
+    button4 = tk.Button(window,
                     text="Test",
                     font=('Arial', 11),
                     command=test_function)
-button4.pack(padx=10, pady=10)
+    button4.pack(padx=10, pady=10)
 
-status_message = ""
-status = Label(window,
+    status_message = ""
+    status = Label(window,
                text=status_message,
                bd=1,
                relief=SUNKEN,
                anchor="w",
                font=('Arial', 9))
-status.pack(side=BOTTOM, fill="x")
+    status.pack(side=BOTTOM, fill="x")
 
-window.mainloop()
+    window.mainloop()
+
+    print(CAD_software)
+
 # End of GUI loop.
+
+if __name__ == "__main__":
+    main()
