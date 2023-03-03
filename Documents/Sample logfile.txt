@@ -17,3 +17,5 @@ ERROR 2: No Manufacturer Part Number.===> Row:<ROW NO>
 ERROR 3: Manufacturer Part Number Duplicate.===> MPN:<MPN> Row:<ROW NUMBER> Row:<ROW NUMBER>
 ERROR 4: Matching EAZIX Number.===> EAZIX#1:<ROW1 NO> EAZIX#2:<ROW2 NO> EAZIX#3:<ROW3 NO>
 ERROR 5: Matching SAP Number.===> SAP#1:<ROW1 NO> SAP#2:<ROW2 NO> SAP#3:<ROW3 NO>
+ERROR 6: Clearing log file failed.
+ERROR 7: Open log file failed.
