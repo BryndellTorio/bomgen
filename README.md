@@ -6,8 +6,7 @@
 
 
 ### TO DO:
-+ Home path directory error
-    - Move the program directory in desktop[$Home/Desktop/]
++ Use customtkinter examples to create a modern GUI.
 
 
 ## References:
