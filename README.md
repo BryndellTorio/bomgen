@@ -13,7 +13,7 @@
 ## References:
 + Reference: https://realpython.com/openpyxl-excel-spreadsheets-python/
 
-# Format:
+## Format:
 + Header
     Item\tQuantity\tReference\tEAZIX_Part_Key\tSAP_Item_Code\tDescription\tManufacturer1\tMfr_Part_Number1\tManufacturer2\tMfr_Part_Number2\tROHS\tAssembly Notes
 + Combined Property String 
