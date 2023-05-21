@@ -1,233 +1,110 @@
-# Core modules
-import os
-import time
-import tkinter as tk
 import customtkinter
-from tkinter import BOTTOM, SUNKEN, Label, OptionMenu, StringVar, filedialog, messagebox
-from datetime import date
-
-# 3rd party modules
-from openpyxl import load_workbook
-
-# Locally defined modules
-import checker
-
-# [DEFINITION]
-# Path definition
-HOME = os.path.expanduser("~") + "\\Documents"
-INITIAL_DIR = HOME + "\\bomgen\\Data"
-LOG_FILE_LOCATION = HOME + "\\bomgen\\log\\err.log"
-LOGO_LOCATION = HOME + "\\bomgen\\Images\\IMI-Logo.png"
-FORMAT_LOCATION = HOME + "\\bomgen\\Format\\Default_Format.xlsx"
-
-# BOM column number definitions
-QUANTITY_INDEX = 2
-REFERENCE_INDEX = 3
-EAZIX_INDEX = 4
-SAP_INDEX = 5
-MANUFACTURER1_INDEX = 7
-MPN1_INDEX = 8
-MANUFACTURER2_INDEX = 9
-MPN2_INDEX = 10
-NOTES_INDEX = 12
-
-# Index of BOM file.
-BOM_INDEX = 15
-
-# [IMPORTANT] Save the *.BOM files as Excel Workbook. Stict Open XML Spreadsheet format will cause errors.
-def validate_bom():
-    set_statusbar_message("Generating BOM...")
-    window.path_to_data = filedialog.askopenfilename(
-            initialdir=INITIAL_DIR, # Change this to $HOME location.
-            title="Select a file",
-            filetypes=(("Excel files", "*.xlsx"), # ("BOM files", "*.BOM"), Check if .BOM can be processed.
-                       ("all files", "*.*")))
-
-    # Loading the selected bom file into the design.
-    wb = load_workbook(filename=window.path_to_data, read_only=True)
-    ws = wb.active
-
-    # Validating item count for Reference and Quantity column.
-    t_results=[]
-
-    BOM_MAX_ROW = ws.max_row-BOM_INDEX+1
-
-    for i in range(BOM_MAX_ROW):
-        comp_QR_result = checker.compare_quantity_to_reference(ws.cell(row=BOM_INDEX+i,column=REFERENCE_INDEX).value,
-                                                               ws.cell(row=BOM_INDEX+i,column=QUANTITY_INDEX).value,
-                                                               i)
-        if comp_QR_result:
-            t_results.append(comp_QR_result)
-
-    if t_results:
-        log("WRITE_ITEM_COUNT_ERROR",list=t_results)
-
-def test_function():
-    window.path_to_data = filedialog.askopenfilename(
-            initialdir=INITIAL_DIR, # Change this to $HOME location.
-            title="Select a file",
-            filetypes=(("Excel files", "*.xlsx"), # ("BOM files", "*.BOM"), Check if .BOM can be processed.
-                       ("all files", "*.*")))
-
-    # Loading the selected bom file into the design.
-    wb = load_workbook(filename=window.path_to_data, read_only=True)
-    ws = wb.active
-
-    BOM_MAX_ROW = ws.max_row-BOM_INDEX+1
-
-    # Validating MPN1
-    mpn1_list=[] 
-    place_holder=[]
-    for i in range(BOM_MAX_ROW):
-       mpn1_list.append(ws.cell(row=BOM_INDEX+i,column=MPN1_INDEX).value)
-    mpn1_list = checker.check_column(mpn1_list,length=BOM_MAX_ROW)
-
-    mpn1_results=[]
-    for i in range(len(mpn1_list)):
-        place_holder = mpn1_list[i].split(':')
-
-        # Checks if the item is already listed in mpn1_results list if no append to the list.
-        ELEMENT1 = place_holder[0]
-        ELEMENT2 = place_holder[1]
-        mark1 = checker.check_list_content(mpn1_results,ELEMENT1)
-        if mark1 == 0:
-            mpn1_results.append(ELEMENT1)
-        mark2 = checker.check_list_content(mpn1_results,ELEMENT2)
-        if mark2 == 0:
-            mpn1_results.append(ELEMENT2)
-    print(mpn1_results)
-
-def show_err_message():
-    messagebox.showerror(title='Error:',message='Found mismatch in Quantity and Reference.')
-    if messagebox.askyesnocancel(title='log',message='Do you like to open log file?'):
-        os.startfile(LOG_FILE_LOCATION)
-
-def set_statusbar_message(select_status):
-    status['text'] = select_status
-
-def log(select,message="",list=[]):
-    fileName=LOG_FILE_LOCATION
-    if select == "WRITE":
-        logFile = open(fileName, 'a')
-        logFile.write(message)
-        logFile.close()
-    elif select == "WRITE_ITEM_COUNT_ERROR":
-        set_statusbar_message("ERROR found check log file.")
-        DATE = date.today()
-        curr_time = time.strftime("%H:%M:%S", time.localtime())
-        log("WRITE",message=f"###\tSTART\t###\t[{curr_time} {DATE}]\n")
-
-        # Split the received list using ':' then store it in an array.
-        arr = []
-        for i in range(len(list)):
-            arr.append(str(list[i]).split(":"))
-
-        for index in range(len(arr)):
-            item_number = arr[index][0]
-            ref_count = arr[index][1]
-            qty_count = arr[index][2]
-            message_log = f"ERROR: Reference and Quantity item count mismatch.===> Row:{int(item_number)+BOM_INDEX-1}\t\tReference count:{ref_count}\tQuantity count:{qty_count}\n"
-            log("WRITE", message=message_log)
-        log("WRITE",message="###\tEND\t###\n")
-        show_err_message()
-
-def open_log_file():
-    set_statusbar_message("Opening log file...")
-    os.startfile(LOG_FILE_LOCATION)
-    set_statusbar_message("Done.")
-
-def clear_log():
-    set_statusbar_message("Clearing log file")
-    fileName=LOG_FILE_LOCATION
-    logFile = open(fileName, 'w')
-    logFile.close()
-    set_statusbar_message("Done.")
+import os
+from PIL import Image
 
 
-def main():
-    # System Settings
-    customtkinter.set_appearance_mode("System")
-    customtkinter.set_default_color_theme("blue")
+class App(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
 
-    app = customtkinter.CTk()
-    app.geometry("350x350")
+        self.title("Integrated Micro-Electronics Inc. - Design and Development")
+        self.geometry("700x450")
 
-    label = customtkinter.CTkLabel(app,
-                    text="BOM Generator",
-                    font=("snap ITC", 28))
-    label.pack(padx=15, pady=15)
+        # set grid layout 1x2
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
-    button1 = customtkinter.CTkButton(app,
-                        text="Generate BOM",
-                        font=("Comic Sans MS", 11),
-                        command=validate_bom)
-    button1.pack(padx=10, pady=10)
-    app.mainloop()
-    
-    # global window, status
-    # Start of GUI loop.
-    # window = tk.Tk()
-    #
-    # window.geometry("350x350")
-    # window.title("Integrater Micro-Electronics Inc. - Design and Development")
-    # icon = tk.PhotoImage(file=LOGO_LOCATION)
-    # window.iconphoto(True,icon)
-    #
-    # label = tk.Label(window,
-    #                 text="BOM Generator",
-    #                 font=('Arial', 20))
-    # label.pack(padx=15, pady=15)
-    #
-    # # Drop down code here.
-    # options = [
-    #         "Orcad 17.2",
-    #         "Altium",
-    #         "Pads"
-    #         ]
-    # CAD_software = StringVar(window)
-    #
-    # CAD_software.set("Select CAD software")
-    # drop = OptionMenu(window, CAD_software, *options)
-    # drop.pack(side=tk.RIGHT, padx=15)
-    #
-    # button1 = tk.Button(window,
-    #                     text="Generate BOM",
-    #                     font=('Arial', 11),
-    #                     command=validate_bom)
-    # button1.pack(padx=10, pady=10)
-    #
-    # button2 = tk.Button(window, 
-    #                     text="Open Log",
-    #                     font=('Arial', 11),
-    #                     command=open_log_file)
-    # button2.pack(padx=10, pady=10)
-    #
-    # button3 = tk.Button(window, 
-    #                     text="Clear Log",
-    #                     font=('Arial', 11),
-    #                     command=clear_log)
-    # button3.pack(padx=10, pady=10)
-    # 
-    # button4 = tk.Button(window,
-    #                 text="Test",
-    #                 font=('Arial', 11),
-    #                 command=test_function)
-    # button4.pack(padx=10, pady=10)
-    #
-    # status_message = ""
-    # status = Label(window,
-    #            text=status_message,
-    #            bd=1,
-    #            relief=SUNKEN,
-    #            anchor="w",
-    #            font=('Arial', 9))
-    # status.pack(side=BOTTOM, fill="x")
-    #
-    # window.mainloop()
-    #
-    # print(CAD_software)
+        # load images with light and dark mode image
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Images")
+        self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "imi_logo.png")), size=(26, 26))
+        self.circuit_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "circuit_board_2.png")), size=(500, 150))
+        self.excel_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "excel_icon.png")), size=(20, 20))
+        self.file_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "file_icon.jpg")), size=(20, 20))
+        self.imi_box_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "imi_box_logo.png")), size=(20, 20))
+        self.information_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "information_icon.png")), size=(20, 20))
+        self.home_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "home_light.png")), size=(20, 20))
 
-# End of GUI loop.
+        # create navigation frame
+        self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
+        self.navigation_frame.grid(row=0, column=0, sticky="nsew")
+        self.navigation_frame.grid_rowconfigure(4, weight=1)
+
+        self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="  BOM Generator", image=self.imi_box_image,
+                                                             compound="left", font=customtkinter.CTkFont(size=15, weight="bold"))
+        self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
+
+        self.home_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Home",
+                                                   fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                                   image=self.home_image, anchor="w", command=self.home_button_event)
+        self.home_button.grid(row=1, column=0, sticky="ew")
+
+        self.frame_2_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Frame 2",
+                                                      fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                                      image=self.information_image, anchor="w", command=self.frame_2_button_event)
+        self.frame_2_button.grid(row=2, column=0, sticky="ew")
+
+        self.appearance_mode_menu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Altium", "Cadence", "PADS"],
+                                                                command=self.select_CAD_event)
+        self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
+
+        # create home frame
+        self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.home_frame.grid_columnconfigure(0, weight=1)
+
+        self.home_frame_large_image_label = customtkinter.CTkLabel(self.home_frame, text="", image=self.circuit_image)
+        self.home_frame_large_image_label.grid(row=0, column=0, padx=30, pady=10)
+
+        self.home_frame_button_1 = customtkinter.CTkButton(self.home_frame, text="Choose file", image=self.excel_image, compound="left")
+        self.home_frame_button_1.grid(row=1, column=0, padx=20, pady=10)
+        self.home_frame_button_2 = customtkinter.CTkButton(self.home_frame, text="logfile", image=self.file_image, compound="left")
+        self.home_frame_button_2.grid(row=2, column=0, padx=20, pady=10)
+
+        # create second frame
+        self.second_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+
+        # create third frame
+        self.third_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+
+        # select default frame
+        self.select_frame_by_name("home")
+
+    def select_frame_by_name(self, name):
+        # set button color for selected button
+        self.home_button.configure(fg_color=("gray75", "gray25") if name == "home" else "transparent")
+        self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "frame_2" else "transparent")
+
+        # show selected frame
+        if name == "home":
+            self.home_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.home_frame.grid_forget()
+        if name == "frame_2":
+            self.second_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.second_frame.grid_forget()
+        if name == "frame_3":
+            self.third_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.third_frame.grid_forget()
+
+    def home_button_event(self):
+        self.select_frame_by_name("home")
+
+    def frame_2_button_event(self):
+        self.select_frame_by_name("frame_2")
+
+    def frame_3_button_event(self):
+        self.select_frame_by_name("frame_3")
+
+    def select_CAD_event(self, new_appearance_mode):
+        # insert code to select the right command
+        if new_appearance_mode == "Altium":
+            print("Altium is selected.")
+        elif new_appearance_mode == "Cadence":
+            print("Cadence is selected.")
+        elif new_appearance_mode == "PADS":
+            print("PADS is selected.")
 
 if __name__ == "__main__":
-    main()
+    app = App()
+    app.mainloop()
