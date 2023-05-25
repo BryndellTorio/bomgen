@@ -2,9 +2,11 @@ import customtkinter
 import os
 from PIL import Image
 
+
 #imports to copy paste from initial BOM to master BOM.
 from pathlib import Path
 from openpyxl import load_workbook, Workbook
+import pandas as pd
 
 
 class App(customtkinter.CTk):
@@ -108,31 +110,66 @@ class App(customtkinter.CTk):
             print("Cadence is selected.")
         elif new_appearance_mode == "PADS":
             print("PADS is selected.")
+
+    ### The function below have UnicodeError Bug. Needs to be fixed for converting CSV to Excel functionality.
+    # def convert_csv_to_excel(self):
+    #     SOURCE_DIR = os.getcwd()
+    #     DATA_LOCATION = "\\tmp\\"
+    #
+    #     path_to_data = customtkinter.filedialog.askopenfilename(
+    #             initialdir=SOURCE_DIR,
+    #             title="Select a file",
+    #             filetypes=(("CSV files", "*.csv"),
+    #                        ("Excel files", "*.xlsx"),
+    #                        ("all files", "*.*")))
+    #     fileNameWithOutExtension = Path(path_to_data).stem
+    #     excelFileNameFullPath = SOURCE_DIR + DATA_LOCATION + str(fileNameWithOutExtension) + ".xlsx"
+    #     read_file = pd.read_csv(path_to_data, engine='python')
+    #     print(path_to_data)
+    #     read_file.to_excel(excelFileNameFullPath,
+    #                        index=None, 
+    #                        header=True) 
+
     def copy_files_to_Master(self):
-        SAMPLE_DATA = ".\\Data\\sample_data.xlsx"
-        COMPONENT_START_INDEX = 15 - 1 #The indexing starts at 0.
-        wb = load_workbook(filename=SAMPLE_DATA)
-        ws = wb.active
-        dict_item = {}
-        column_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]
-        indexLastItem = ws.max_row
-        totalNumberOfItems = indexLastItem - COMPONENT_START_INDEX
-        Name_ColumnTitle = ws["A12"].value
-        Name_Column1LastRow = "A" + str(indexLastItem)
-        Name_Column1FirstRow = "A" + str(COMPONENT_START_INDEX + 1)
+        self.convert_csv_to_excel()
+        # COMPONENT_START_INDEX = 15 - 1 #The indexing starts at 0.
+        # dict_item = {}
+        # wb = load_workbook(filename=SAMPLE_DATA)
+        # ws = wb.active
+        # indexLastElement = ws.max_row
 
-        rng = wb[ws.title][Name_Column1FirstRow:Name_Column1LastRow]
-        rng_values = []
-        for cells in rng:
-            for cell in cells:
-                rng_values.append(cell.value)
-        dict_item[Name_ColumnTitle] = rng_values
+        # totalNumberOfItems = indexLastElement - COMPONENT_START_INDEX
 
-        print(dict_item)
+        # Name_ColumnTitle = ws["A12"].value
+        # lastElement = "A" + str(indexLastElement)
+        # firstElement = "A" + str(COMPONENT_START_INDEX + 1)
+        # column_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]
+        # for i in column_list:
+        #     if column_list is not None:
+        #         print(ws[f"{i}12"].value)
+        #     else:
+        #         return
+        # print(type(column_list[1]))
+
+        # for i in column_list:
+        #     placeHolder = str(column_list[i]) + "12"
+        #     print(ws[placeHolder].value)
+
+        # for i in column_list:
+            # Name_ColumnTitle = ws[column_list[i] + "12"].value
+            # lastElement = column_list[i] + str(indexLastElement)
+            # firstElement = column_list[i] + str(COMPONENT_START_INDEX + 1)
+            # rng = wb[ws.title][firstElement:lastElement]
+            # rng_values = []
+            # for cells in rng:
+            #     print(cells)
+                # for cell in cells:
+                #     rng_values.append(cell.value)
+            # dict_item[Name_ColumnTitle] = rng_values
+            # print(dict_item)
 
         # wbMasterFile = load_workbook(filename=".\\Format\\Default_Format.xlsx")
         # rng = ws
-
 
 
 if __name__ == "__main__":
