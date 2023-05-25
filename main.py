@@ -2,6 +2,10 @@ import customtkinter
 import os
 from PIL import Image
 
+#imports to copy paste from initial BOM to master BOM.
+from pathlib import Path
+from openpyxl import load_workbook, Workbook
+
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -54,7 +58,7 @@ class App(customtkinter.CTk):
         self.home_frame_large_image_label = customtkinter.CTkLabel(self.home_frame, text="", image=self.circuit_image)
         self.home_frame_large_image_label.grid(row=0, column=0, padx=30, pady=10)
 
-        self.home_frame_button_1 = customtkinter.CTkButton(self.home_frame, text="Choose file", image=self.excel_image, compound="left")
+        self.home_frame_button_1 = customtkinter.CTkButton(self.home_frame, text="Choose file", image=self.excel_image, compound="left", command=self.copy_files_to_Master)
         self.home_frame_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.home_frame_button_2 = customtkinter.CTkButton(self.home_frame, text="logfile", image=self.file_image, compound="left")
         self.home_frame_button_2.grid(row=2, column=0, padx=20, pady=10)
@@ -104,6 +108,32 @@ class App(customtkinter.CTk):
             print("Cadence is selected.")
         elif new_appearance_mode == "PADS":
             print("PADS is selected.")
+    def copy_files_to_Master(self):
+        SAMPLE_DATA = ".\\Data\\sample_data.xlsx"
+        COMPONENT_START_INDEX = 15 - 1 #The indexing starts at 0.
+        wb = load_workbook(filename=SAMPLE_DATA)
+        ws = wb.active
+        dict_item = {}
+        column_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"]
+        indexLastItem = ws.max_row
+        totalNumberOfItems = indexLastItem - COMPONENT_START_INDEX
+        Name_ColumnTitle = ws["A12"].value
+        Name_Column1LastRow = "A" + str(indexLastItem)
+        Name_Column1FirstRow = "A" + str(COMPONENT_START_INDEX + 1)
+
+        rng = wb[ws.title][Name_Column1FirstRow:Name_Column1LastRow]
+        rng_values = []
+        for cells in rng:
+            for cell in cells:
+                rng_values.append(cell.value)
+        dict_item[Name_ColumnTitle] = rng_values
+
+        print(dict_item)
+
+        # wbMasterFile = load_workbook(filename=".\\Format\\Default_Format.xlsx")
+        # rng = ws
+
+
 
 if __name__ == "__main__":
     app = App()
